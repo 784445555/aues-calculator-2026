@@ -1,0 +1,1373 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Калькулятор АУЭС 2026</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Unbounded:wght@500;700&display=swap">
+<style>
+  /* Layout: рабочий инструмент — шапка с вкладками, сводка сверху, ниже карточки дисциплин с журналом «как в Platonus». */
+  :root {
+    --bg: #f2f4f8;
+    --surface: #ffffff;
+    --surface-2: #eceff5;
+    --np: #dfe3ea;
+    --np-text: #8a93a3;
+    --border: #dde2ea;
+    --border-strong: #c3cad6;
+    --text: #121826;
+    --muted: #5a6476;
+    --accent: #2147c4;
+    --accent-soft: #e6ecfc;
+    --accent-text: #ffffff;
+    --ok: #12693a;  --ok-bg: #e5f4ea;
+    --err: #b3261e; --err-bg: #fcebe9;
+    --warn: #875700; --warn-bg: #fff3d4;
+    --info-bg: #eaf0fb;
+    --t-ex: #12693a; --t-good: #2147c4; --t-sat: #875700; --t-fail: #b3261e;
+    --font-display: "Unbounded", "IBM Plex Sans", system-ui, sans-serif;
+    --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1118; --surface: #161a23; --surface-2: #1d2230; --np: #262c3a; --np-text: #6f7a8e;
+      --border: #272d3b; --border-strong: #3a4254; --text: #e7eaf1; --muted: #98a2b5;
+      --accent: #7c9cff; --accent-soft: #1c2645; --accent-text: #0a1024;
+      --ok: #62d08e; --ok-bg: #11291b; --err: #ff8b80; --err-bg: #301614;
+      --warn: #f0c35c; --warn-bg: #2b2310; --info-bg: #182136;
+      --t-ex: #62d08e; --t-good: #9bb3ff; --t-sat: #f0c35c; --t-fail: #ff8b80;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1118; --surface: #161a23; --surface-2: #1d2230; --np: #262c3a; --np-text: #6f7a8e;
+    --border: #272d3b; --border-strong: #3a4254; --text: #e7eaf1; --muted: #98a2b5;
+    --accent: #7c9cff; --accent-soft: #1c2645; --accent-text: #0a1024;
+    --ok: #62d08e; --ok-bg: #11291b; --err: #ff8b80; --err-bg: #301614;
+    --warn: #f0c35c; --warn-bg: #2b2310; --info-bg: #182136;
+    --t-ex: #62d08e; --t-good: #9bb3ff; --t-sat: #f0c35c; --t-fail: #ff8b80;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 var(--font-body); }
+  .wrap { max-width: 1280px; margin: 0 auto; padding-block: 24px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+  header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; margin-bottom: 18px; }
+  h1 { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1.2; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+  header.top p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+  h2 { font-size: 16px; margin: 0; }
+
+  .tabs { display: inline-flex; background: var(--surface-2); border-radius: 10px; padding: 3px; gap: 2px; }
+  .tabs button { border: 0; background: transparent; color: var(--muted); font: 600 14px var(--font-body); padding: 7px 14px; border-radius: 8px; cursor: pointer; }
+  .tabs button[aria-selected="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .tabs button:focus-visible, button:focus-visible, .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; min-width: 0; }
+  .stack { display: grid; gap: 16px; min-width: 0; }
+
+  /* ---- Панель инструментов ---- */
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .toolbar .sep { flex: 1 1 auto; }
+  button.btn { font: 500 14px var(--font-body); height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); cursor: pointer; white-space: nowrap; }
+  button.btn:hover { background: var(--surface-2); }
+  button.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+  button.btn.primary:hover { filter: brightness(1.07); }
+  button.btn.toggle[aria-pressed="true"] { background: var(--err-bg); border-color: var(--err); color: var(--err); }
+  button.btn.danger { color: var(--err); }
+  button.btn.small { height: 30px; padding: 0 10px; font-size: 13px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .legend i { display: inline-block; width: 26px; height: 16px; border-radius: 4px; vertical-align: -3px; margin-right: 6px; font-style: normal; font-size: 10px; text-align: center; line-height: 16px; }
+  .legend .l-np { background: var(--np); color: var(--np-text); }
+  .legend .l-nya { background: var(--err-bg); color: var(--err); font-weight: 700; }
+  .notice { margin-top: 12px; font-size: 13px; padding: 10px 12px; border-radius: 8px; background: var(--info-bg); }
+  .notice b { font-weight: 600; }
+
+  /* ---- Сводка ---- */
+  .sum-wrap { overflow-x: auto; }
+  table.sum { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 14px; }
+  .sum th { text-align: left; font-size: 12px; font-weight: 600; color: var(--muted); padding: 0 8px 8px 0; white-space: nowrap; }
+  .sum td { padding: 8px 8px 8px 0; border-top: 1px solid var(--border); vertical-align: middle; }
+  .sum th.n, .sum td.n { text-align: right; }
+  .sum td.name button { all: unset; cursor: pointer; color: var(--text); font-weight: 500; }
+  .sum td.name button:hover { color: var(--accent); text-decoration: underline; }
+  .sum td.name button:focus-visible { outline: 2px solid var(--accent); }
+  .sum .letter { font-weight: 700; }
+  .pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .pill.ok { background: var(--ok-bg); color: var(--ok); }
+  .pill.err { background: var(--err-bg); color: var(--err); }
+  .pill.info { background: var(--surface-2); color: var(--muted); }
+  .pill.auto { background: var(--accent-soft); color: var(--accent); }
+  .sum-foot { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .sum-foot b { color: var(--text); font-variant-numeric: tabular-nums; }
+
+  /* ---- Карточка дисциплины ---- */
+  .disc { padding: 14px 0 12px; }
+  .disc-h { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; padding: 0 14px 12px; }
+  .disc-name { flex: 1 1 240px; min-width: 0; height: 38px; font: 600 15px var(--font-body); border: 1px solid transparent; border-radius: 8px; padding: 0 10px; margin-left: -10px; background: transparent; color: var(--text); }
+  .disc-name:hover { border-color: var(--border); }
+  .disc-name:focus { outline: 2px solid var(--accent); outline-offset: -1px; background: var(--surface); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font: 500 13px var(--font-body); padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-strong); background: transparent; color: var(--muted); cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .cfg { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .cfg.bad { color: var(--warn); }
+
+  .tbl-wrap { overflow-x: auto; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  table.pt { border-collapse: separate; border-spacing: 0; font-size: 13px; font-variant-numeric: tabular-nums; min-width: 100%; }
+  .pt th, .pt td { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 0; text-align: center; white-space: nowrap; }
+  .pt tr:last-child td { border-bottom: 0; }
+  .pt th { font-size: 11px; font-weight: 600; color: var(--muted); background: var(--surface-2); padding: 5px 4px; }
+  .pt thead tr.grp th { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--text); background: var(--surface); padding: 6px 4px; }
+  .pt .sticky { position: sticky; left: 0; z-index: 1; background: var(--surface); text-align: left; padding: 4px 10px; min-width: 92px; box-shadow: 1px 0 0 var(--border); border-right: 0; }
+  .pt th.sticky { background: var(--surface-2); z-index: 2; }
+  .pt thead tr.grp th.sticky { background: var(--surface); }
+  .pt .kind { font-weight: 600; font-size: 13px; display: block; }
+  .pt .coefv { font-size: 11px; color: var(--muted); }
+  .pt td.out { padding: 4px 8px; min-width: 50px; font-weight: 500; }
+  .pt td.out.tot { font-weight: 700; background: var(--surface-2); }
+  .pt td.big { font-weight: 700; font-size: 14px; }
+  .pt .gap { border-left: 2px solid var(--border-strong); }
+  .pt td.wk { width: 40px; }
+  input.cell { display: block; width: 40px; height: 36px; border: 0; background: var(--surface); color: var(--text); text-align: center; font: 500 13px var(--font-body); font-variant-numeric: tabular-nums; padding: 0; border-radius: 0; }
+  input.cell.np { background: var(--np); }
+  input.cell.np::placeholder { color: var(--np-text); font-size: 10px; }
+  input.cell.nya { background: var(--err-bg); color: var(--err); font-weight: 700; }
+  input.cell.zero { color: var(--err); }
+  input.cell.bad { box-shadow: inset 0 0 0 2px var(--err); }
+  input.cell:focus { outline: 2px solid var(--accent); outline-offset: -2px; position: relative; z-index: 1; }
+  .nya-mode input.cell { cursor: pointer; caret-color: transparent; }
+  input.val { width: 52px; height: 32px; border: 1px solid var(--border-strong); border-radius: 6px; background: var(--surface); color: var(--text); text-align: center; font: 600 13px var(--font-body); font-variant-numeric: tabular-nums; margin: 4px; }
+  input.val:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+  input.val[aria-invalid="true"] { border-color: var(--err); background: var(--err-bg); }
+  input.val:disabled { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+  .empty-row td { padding: 14px; color: var(--muted); text-align: left; white-space: normal; }
+
+  .disc-f { display: grid; gap: 10px; padding: 12px 14px 0; }
+  .disc-actions { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
+
+  .banner { border-radius: 8px; padding: 8px 12px; font-size: 13.5px; }
+  .banner strong { font-weight: 600; }
+  .banner ul { margin: 4px 0 0; padding-left: 18px; }
+  .banner.ok { background: var(--ok-bg); color: var(--ok); }
+  .banner.err { background: var(--err-bg); color: var(--err); }
+  .banner.warn { background: var(--warn-bg); color: var(--warn); }
+  .banner.info { background: var(--info-bg); color: var(--text); }
+  .banner.info span { color: var(--muted); }
+  .banner + .banner { margin-top: 6px; }
+
+  .check { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; cursor: pointer; }
+  .check input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--accent); flex: none; cursor: pointer; }
+  .check small { display: block; color: var(--muted); font-size: 12px; }
+  .auto-note { font-size: 12.5px; color: var(--muted); }
+  .auto-note.ok { color: var(--ok); }
+
+  .need h3 { font-size: 12px; font-weight: 600; color: var(--muted); margin: 0 0 6px; }
+  .need-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
+  .need-cell { background: var(--surface-2); border-radius: 6px; padding: 4px 2px; text-align: center; font-variant-numeric: tabular-nums; }
+  .need-cell .l { font-weight: 700; font-size: 12px; }
+  .need-cell .v { font-size: 13px; }
+  .need-cell.no { opacity: .45; }
+  .need-cell.free .v { color: var(--ok); }
+
+  .tone-ex { color: var(--t-ex); } .tone-good { color: var(--t-good); } .tone-sat { color: var(--t-sat); } .tone-fail { color: var(--t-fail); }
+
+  .add-disc { display: flex; justify-content: center; }
+
+  /* ---- Быстрый расчёт ---- */
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 18px; align-items: start; }
+  .results { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); }
+  .card-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .tag { font-size: 12px; color: var(--muted); background: var(--surface-2); border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+  .field + .field { margin-top: 14px; }
+  .lbl { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+  .hint { font-weight: 400; color: var(--muted); }
+  .lbl-row { display: flex; justify-content: space-between; align-items: center; gap: 8px 12px; flex-wrap: wrap; margin-bottom: 8px; }
+  .lbl-row .lbl { margin: 0; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  input.txt, select.txt { width: 100%; height: 40px; padding: 0 12px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; font-variant-numeric: tabular-nums; }
+  input.txt:focus, select.txt:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+  input.txt[aria-invalid="true"] { border-color: var(--err); background: var(--err-bg); }
+  input.txt:disabled { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+  .err { color: var(--err); font-size: 13px; margin-top: 4px; }
+  .err:empty { display: none; }
+  .seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; }
+  .seg button { border: 0; background: transparent; padding: 6px 12px; font: 13px var(--font-body); color: var(--muted); cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--border-strong); }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); }
+  .note { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
+  .grades { display: grid; gap: 10px; }
+  .grade-row label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .coef { font-weight: 500; color: var(--muted); }
+  .meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .meta:empty { display: none; }
+  .formula { font-size: 13px; color: var(--muted); margin-top: 8px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .formula:empty { display: none; }
+  .pline { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); font-size: 14px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .pline b { font-size: 16px; }
+  .sub-checks { display: grid; gap: 8px; margin: 10px 0 0 26px; }
+  .metrics { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 14px; margin-top: 12px; }
+  .metrics td { padding: 7px 0; border-bottom: 1px solid var(--border); vertical-align: baseline; }
+  .metrics td:last-child { text-align: right; font-weight: 600; }
+  .metrics .sm { display: block; font-size: 12px; color: var(--muted); font-weight: 400; }
+  .metrics tr.total td { border-bottom: 0; padding-top: 10px; font-size: 16px; }
+  .grade-tile { display: flex; align-items: center; gap: 16px; margin-top: 12px; padding: 14px; border-radius: 10px; background: var(--surface-2); }
+  .grade-tile .letter { font-family: var(--font-display); font-size: 36px; font-weight: 700; line-height: 1; min-width: 64px; text-align: center; }
+  .grade-tile .gt-meta { font-size: 13px; color: var(--muted); }
+  .grade-tile .gt-meta b { color: var(--text); font-size: 15px; display: block; }
+  .results .need { margin-top: 14px; }
+  .results .need-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .fine { font-size: 12px; color: var(--muted); margin: 12px 0 0; }
+
+  dialog { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); padding: 18px; width: min(640px, calc(100vw - 32px)); }
+  dialog::backdrop { background: rgba(0,0,0,.45); }
+  dialog textarea { width: 100%; height: 260px; margin: 12px 0; padding: 10px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); font: 12.5px/1.5 ui-monospace, Consolas, monospace; resize: vertical; }
+  dialog .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 8px 14px; border-radius: 8px; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 20; max-width: calc(100vw - 32px); }
+  .toast.show { opacity: 1; }
+  footer { margin-top: 28px; font-size: 12px; color: var(--muted); max-width: 70ch; }
+  .save-state { font-size: 12px; color: var(--muted); }
+
+  @media (max-width: 920px) {
+    .layout { grid-template-columns: 1fr; }
+    .results { position: static; }
+  }
+  @media (max-width: 560px) {
+    h1 { font-size: 19px; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .need-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .toolbar .sep { display: none; }
+    .sum .hide-sm { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Калькулятор успеваемости АУЭС</h1>
+      <p>По Регламенту рубежных контролей 2026 · рейтинг допуска, итоговая оценка, автомат</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Разделы">
+      <button type="button" role="tab" id="tab-journal" aria-controls="view-journal" data-tab="journal">Журнал</button>
+      <button type="button" role="tab" id="tab-long" aria-controls="view-journal" data-tab="long">Удлинённый период</button>
+      <button type="button" role="tab" id="tab-quick" aria-controls="view-quick" data-tab="quick">Быстрый расчёт</button>
+    </div>
+  </header>
+
+  <!-- ================= Журнал ================= -->
+  <div id="view-journal" role="tabpanel" aria-labelledby="tab-journal" class="stack">
+    <section class="card" aria-labelledby="sum-title">
+      <div class="toolbar">
+        <h2 id="sum-title">Сводка семестра</h2>
+        <span class="sep"></span>
+        <button type="button" class="btn toggle" id="btn-nya" aria-pressed="false" title="Касание по клетке ставит или снимает «н»">Ставить «н»</button>
+        <button type="button" class="btn" id="btn-example">Пример</button>
+        <button type="button" class="btn" id="btn-export">Экспорт / импорт</button>
+        <button type="button" class="btn danger" id="btn-new">Новый семестр</button>
+      </div>
+      <div id="notice"></div>
+      <div class="sum-wrap" style="margin-top:12px"><table class="sum" id="sum"></table></div>
+      <div class="sum-foot" id="sum-foot"></div>
+      <div class="legend">
+        <span><i class="l-np">н.п.</i>пустая клетка — не предусмотрено, не считается</span>
+        <span><i class="l-nya">н</i>неявка, считается как 0</span>
+        <span>Enter — следующая клетка</span>
+      </div>
+    </section>
+
+    <div id="discs" class="stack"></div>
+    <div class="add-disc"><button type="button" class="btn primary" id="btn-add">+ Добавить дисциплину</button></div>
+  </div>
+
+  <!-- ================= Быстрый расчёт ================= -->
+  <div id="view-quick" role="tabpanel" aria-labelledby="tab-quick" hidden>
+    <div class="layout">
+      <main class="stack">
+        <section class="card">
+          <div class="grid-2">
+            <div>
+              <label class="lbl" for="q-discipline">Дисциплина <span class="hint">(необязательно)</span></label>
+              <input class="txt" type="text" id="q-discipline" data-q="discipline" maxlength="120" placeholder="напр. Базы данных" autocomplete="off">
+            </div>
+            <div>
+              <label class="lbl" for="q-config">Виды занятий</label>
+              <select class="txt" id="q-config" data-q="config"></select>
+            </div>
+          </div>
+        </section>
+        <div id="q-periods" class="stack"></div>
+        <section class="card">
+          <div class="card-h"><h2>Экзамен</h2><span class="tag">итоговый контроль</span></div>
+          <div class="field">
+            <label class="lbl" for="q-ik">ИК <span class="hint">балл за экзамен</span></label>
+            <input class="txt" type="text" inputmode="decimal" autocomplete="off" id="q-ik" data-q="ik" placeholder="0–100" style="max-width:140px">
+            <div class="err" id="q-ik-err"></div>
+          </div>
+          <label class="check" style="margin-top:12px">
+            <input type="checkbox" id="q-auto" data-q="auto">
+            <span>Претендую на автомат<small>ИК = рейтинг допуска. Право поставить автомат — за преподавателем.</small></span>
+          </label>
+          <div class="sub-checks" id="q-auto-conds" hidden>
+            <label class="check"><input type="checkbox" id="q-attend" data-q="autoAttend"><span>100% посещаемость</span></label>
+            <label class="check"><input type="checkbox" id="q-tasks" data-q="autoTasks"><span>Все задания сданы вовремя <small>0 баллов = задание не выполнено</small></span></label>
+          </div>
+          <div id="q-auto-status" style="margin-top:10px"></div>
+        </section>
+      </main>
+      <aside class="card results" aria-labelledby="q-res-title">
+        <div class="card-h"><h2 id="q-res-title">Результат</h2></div>
+        <div id="q-res" aria-live="polite"></div>
+        <div class="toolbar" style="margin-top:14px">
+          <button type="button" class="btn danger small" id="q-reset">Очистить</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <footer>
+    Неофициальный инструмент студента. Формулы — по Регламенту проведения рубежных контролей АУЭС 2026: ТК общ по Таблице 1 (К1–К5), P = 0,7·ТК общ + 0,3·РК, РД = (P1 + P2) / 2, ИО = 0,6·РД + 0,4·ИК. Как в Platonus, РД и ИО округляются до целого. Официальные значения всегда смотрите в Platonus.
+    <div class="save-state" id="save-state"></div>
+  </footer>
+</div>
+
+<dialog id="io-dlg" aria-labelledby="io-title">
+  <h2 id="io-title">Экспорт и импорт</h2>
+  <p class="note" style="margin:8px 0 0">Скопируйте текст, чтобы сохранить журнал или перенести на другое устройство. Чтобы загрузить — вставьте сохранённый текст и нажмите «Загрузить».</p>
+  <textarea id="io-text" aria-label="Данные журнала в формате JSON"></textarea>
+  <div class="err" id="io-err"></div>
+  <div class="row" style="margin-top:8px">
+    <button type="button" class="btn primary" id="io-copy">Скопировать</button>
+    <button type="button" class="btn" id="io-load">Загрузить</button>
+    <button type="button" class="btn" id="io-close">Закрыть</button>
+  </div>
+</dialog>
+
+<dialog id="ex-dlg" aria-labelledby="ex-title">
+  <h2 id="ex-title">Загрузить пример</h2>
+  <p class="note" style="margin:8px 0 12px">Оценки из ваших скриншотов Platonus. Текущий журнал будет заменён — сначала сохраните его через «Экспорт», если он нужен.</p>
+  <div class="row">
+    <button type="button" class="btn primary" data-example="s1">1-й семестр</button>
+    <button type="button" class="btn primary" data-example="s2">2-й семестр</button>
+    <button type="button" class="btn" id="ex-close">Отмена</button>
+  </div>
+</dialog>
+
+<dialog id="new-dlg" aria-labelledby="new-title">
+  <h2 id="new-title">Начать новый семестр?</h2>
+  <p class="note" style="margin:8px 0 12px">Все дисциплины и оценки в журнале будут удалены. Если они нужны — сначала сохраните их через «Экспорт».</p>
+  <div class="row">
+    <button type="button" class="btn danger" id="new-go">Очистить журнал</button>
+    <button type="button" class="btn" id="new-close">Отмена</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ================= ПРАВИЛА РЕГЛАМЕНТА 2026 ================= */
+  /*ENGINE-START*/
+  const EPS = 1e-9;
+  const lt = (x, t) => x < t - EPS;
+  const roundInt = x => Math.round(Math.round(x * 1e6) / 1e6);
+
+  const TYPES = ['lek', 'prak', 'lab', 'srop'];
+  const TYPE_NAME = { lek: 'Лекция', prak: 'Практика', lab: 'Лаб.', srop: 'СРСП' };
+  const TYPE_LABEL = { lek: 'Лекции', prak: 'Практические', lab: 'Лабораторные', srop: 'СРОП / СРМП / СРДП' };
+
+  // Таблица 1. Весовые коэффициенты.
+  const COEF = {
+    K1: { lek: 0.2, prak: 0.3, lab: 0.3, srop: 0.2 },
+    K2: { lek: 0.3, prak: 0.5, srop: 0.2 },
+    K3: { lek: 0.3, lab: 0.5, srop: 0.2 },
+    K4: { prak: 0.9, srop: 0.1 },
+    K5: { lek: 0.5, srop: 0.5 },
+  };
+  const CONFIG_LABEL = {
+    K1: 'К1 — все виды занятий',
+    K2: 'К2 — без лабораторных',
+    K3: 'К3 — без практических',
+    K4: 'К4 — без лекций и лабораторных',
+    K5: 'К5 — без практических и лабораторных',
+  };
+  const CONFIG_BY_SET = { 'lek,prak,lab,srop': 'K1', 'lek,prak,srop': 'K2', 'lek,lab,srop': 'K3', 'prak,srop': 'K4', 'lek,srop': 'K5' };
+
+  // Балльно-рейтинговая система (Приказ МОН РК №595).
+  const SCALE = [
+    { min: 95, letter: 'A',  gpa: '4,0',  trad: 'Отлично', tone: 'ex' },
+    { min: 90, letter: 'A-', gpa: '3,67', trad: 'Отлично', tone: 'ex' },
+    { min: 85, letter: 'B+', gpa: '3,33', trad: 'Хорошо', tone: 'good' },
+    { min: 80, letter: 'B',  gpa: '3,0',  trad: 'Хорошо', tone: 'good' },
+    { min: 75, letter: 'B-', gpa: '2,67', trad: 'Хорошо', tone: 'good' },
+    { min: 70, letter: 'C+', gpa: '2,33', trad: 'Хорошо', tone: 'good' },
+    { min: 65, letter: 'C',  gpa: '2,0',  trad: 'Удовлетворительно', tone: 'sat' },
+    { min: 60, letter: 'C-', gpa: '1,67', trad: 'Удовлетворительно', tone: 'sat' },
+    { min: 55, letter: 'D+', gpa: '1,33', trad: 'Удовлетворительно', tone: 'sat' },
+    { min: 50, letter: 'D',  gpa: '1,0',  trad: 'Удовлетворительно', tone: 'sat' },
+    { min: 25, letter: 'FX', gpa: '0,5',  trad: 'Неудовлетворительно', tone: 'fail' },
+    { min: 0,  letter: 'F',  gpa: '0',    trad: 'Неудовлетворительно', tone: 'fail' },
+  ];
+
+  function gradeFor(score) {
+    const rounded = roundInt(score);
+    return { ...SCALE.find(g => rounded >= g.min), rounded };
+  }
+
+  // Округление до сотых так же, как Platonus (сверено на 28 значениях Р1/Р2 из журнала).
+  const r2 = x => Math.round(x * 100) / 100;
+  const fmt = x => (x == null ? '—' : r2(x).toLocaleString('ru-RU', { maximumFractionDigits: 2 }));
+  const fmtC = c => String(c).replace('.', ',');
+
+  function parseScore(raw) {
+    const s = String(raw ?? '').trim();
+    if (!s) return { state: 'empty' };
+    if (s.startsWith('-')) return { state: 'error', msg: 'Оценка не может быть отрицательной' };
+    const norm = s.replace(',', '.');
+    if (!/^\d{1,3}(\.\d+)?$/.test(norm)) return { state: 'error', msg: 'Введите число от 0 до 100' };
+    const v = Number(norm);
+    if (v > 100) return { state: 'error', msg: 'Максимум — 100 баллов' };
+    return { state: 'ok', value: v };
+  }
+
+  // Клетка журнала: пусто / «нп» — не предусмотрено; «н» / «НЯ» — неявка = 0; число 0–100 — оценка.
+  function parseCell(raw) {
+    const s = String(raw ?? '').trim().toLowerCase().replace(/[.\s]/g, '');
+    if (!s || s === 'нп' || s === 'np') return { k: 'np' };
+    if (s === 'н' || s === 'ня' || s === 'n') return { k: 'nya', v: 0 };
+    const r = parseScore(s);
+    return r.state === 'ok' ? { k: 'g', v: r.value } : { k: 'bad' };
+  }
+
+  // Список оценок для быстрого расчёта.
+  function parseGradeList(raw) {
+    const s = String(raw ?? '').trim();
+    if (!s) return { state: 'empty', skipped: 0 };
+    const grades = [];
+    let skipped = 0;
+    for (const t of s.split(/[\s,;]+/).filter(Boolean)) {
+      const c = parseCell(t);
+      if (c.k === 'np') { skipped++; continue; }
+      if (c.k === 'bad') return { state: 'error', msg: `«${t}» — не оценка. Можно: числа 0–100, «н», «НЯ», «нп»` };
+      grades.push(c.v);
+    }
+    if (!grades.length) return { state: 'empty', skipped };
+    return { state: 'ok', value: grades.reduce((a, b) => a + b, 0) / grades.length, count: grades.length, skipped };
+  }
+
+  function neededExam(rd) {
+    return SCALE.filter(g => g.min >= 50).map(g => {
+      for (let ik = 0; ik <= 100; ik++) if (gradeFor(0.6 * rd + 0.4 * ik).rounded >= g.min) return { g, ik };
+      return { g, ik: null };
+    });
+  }
+
+  /* Допуск (п. 3, 8), автомат (п. 8, 9.2), итоговая оценка (п. 10).
+     rk, p — массивы [период 1, период 2]; null — значение ещё не известно. */
+  function evaluate({ rk, p, ik, autoReq, attendOk, attendMsg, tasksOk, tasksMsg }) {
+    const fails = [];
+    const zero = [0, 1].filter(i => rk[i] != null && rk[i] < EPS);
+    if (zero.length) fails.push({
+      title: 'Нет допуска: 0 баллов за рубежный контроль',
+      detail: `${zero.map(i => `РК${i + 1} = 0`).join(', ')}. Ноль за любой РК закрывает допуск, даже если другой РК высокий.`,
+    });
+    const rkAvg = rk[0] != null && rk[1] != null ? (rk[0] + rk[1]) / 2 : null;
+    if (rkAvg != null && lt(rkAvg, 50)) fails.push({ title: 'Нет допуска: средний балл РК ниже 50', detail: `(РК1 + РК2) / 2 = ${fmt(rkAvg)}` });
+    const rdExact = p[0] != null && p[1] != null ? (p[0] + p[1]) / 2 : null;
+    const rd = rdExact == null ? null : roundInt(rdExact);
+    if (rd != null && lt(rd, 50)) fails.push({ title: 'Нет допуска: рейтинг допуска ниже 50', detail: `РД = ${fmt(rd)}` });
+    const admission = fails.length ? 'fail' : rd != null ? 'ok' : 'incomplete';
+
+    const reasons = [];
+    for (const i of [0, 1]) {
+      if (rk[i] == null) reasons.push(`нет РК${i + 1}`);
+      else if (lt(rk[i], 50)) reasons.push(`РК${i + 1} = ${fmt(rk[i])} < 50`);
+    }
+    if (!attendOk) reasons.push(attendMsg);
+    if (!tasksOk) reasons.push(tasksMsg);
+    if (admission === 'fail') reasons.push('нет допуска к экзамену');
+    else if (rd == null && !reasons.length) reasons.push('РД ещё не рассчитан');
+    const eligible = reasons.length === 0;
+    const applied = !!autoReq && eligible;
+
+    const ikV = applied ? rd : ik;
+    let io = null, grade = null, need = null;
+    if (admission === 'ok') {
+      if (ikV != null) { io = 0.6 * rd + 0.4 * ikV; grade = gradeFor(io); }
+      if (!applied) need = neededExam(rd);
+    }
+    return { fails, admission, rkAvg, rdExact, rd, auto: { requested: !!autoReq, eligible, applied, reasons }, ik: ikV, io, grade, need };
+  }
+
+  /* Журнал: одна дисциплина, как строка в Platonus. Недели 1–7 → ТК1, 8–15 → ТК2. */
+  // split — сколько недель в Периоде 1: 7 (обычный семестр, 1–7 / 8–15) или 9 (удлинённый, 1–9 / 10–15).
+  function computeDiscipline(d, split = 7) {
+    const PERIODS = [[0, split], [split, 15]];
+    const present = TYPES.filter(t => d.types[t]);
+    const cfg = CONFIG_BY_SET[present.join(',')] || null;
+    let nya = 0, zeros = 0, bad = 0;
+    const streams = present.map(t => {
+      const tk = PERIODS.map(([a, b]) => {
+        let sum = 0, n = 0;
+        for (let w = a; w < b; w++) {
+          const c = parseCell(d.cells[t][w]);
+          if (c.k === 'g') { sum += c.v; n++; if (c.v < EPS) zeros++; }
+          else if (c.k === 'nya') { n++; nya++; }
+          else if (c.k === 'bad') bad++;
+        }
+        return n ? sum / n : null;
+      });
+      return { t, c: cfg ? COEF[cfg][t] : null, tk };
+    });
+    const tkOb = [0, 1].map(i => (cfg && streams.every(s => s.tk[i] != null)) ? streams.reduce((a, s) => a + s.c * s.tk[i], 0) : null);
+
+    const errors = [];
+    const val = (raw, label) => {
+      const r = parseScore(raw);
+      if (r.state === 'error') { errors.push(`${label}: ${r.msg.toLowerCase()}`); return { v: null, bad: true }; }
+      return { v: r.state === 'ok' ? r.value : null, bad: false };
+    };
+    const rk1 = val(d.rk1, 'РК1'), rk2 = val(d.rk2, 'РК2'), ikR = val(d.ik, 'ИК');
+    if (bad) errors.push(`клеток с неверным значением: ${bad} (можно число 0–100, «н» или пусто)`);
+    const rk = [rk1.v, rk2.v];
+    const p = [0, 1].map(i => (tkOb[i] != null && rk[i] != null ? 0.7 * tkOb[i] + 0.3 * rk[i] : null));
+
+    const missing = [];
+    if (cfg) for (const i of [0, 1]) {
+      const empty = streams.filter(s => s.tk[i] == null).map(s => TYPE_NAME[s.t].toLowerCase());
+      if (empty.length) missing.push(`оценки ${i ? `недель ${split + 1}–15` : `недель 1–${split}`} (${empty.join(', ')})`);
+      if (rk[i] == null) missing.push(`РК${i + 1}`);
+    }
+
+    const ev = evaluate({
+      rk, p, ik: ikR.v, autoReq: d.auto,
+      attendOk: nya === 0, attendMsg: `в журнале есть «н» (${nya})`,
+      tasksOk: zeros === 0, tasksMsg: `в журнале есть оценки 0 (${zeros})`,
+    });
+    return { present, cfg, streams, tkOb, rk, p, errors, missing, ev, nya, zeros, bad, invalid: { rk1: rk1.bad, rk2: rk2.bad, ik: ikR.bad } };
+  }
+  /*ENGINE-END*/
+
+  /* ================= ДАННЫЕ ================= */
+
+  const STORAGE_KEY = 'aues-2026-v2';
+  let uidSeq = 0;
+  const newId = () => 'd' + Date.now().toString(36) + (uidSeq++).toString(36);
+  const blankCells = () => ({ lek: Array(15).fill(''), prak: Array(15).fill(''), lab: Array(15).fill(''), srop: Array(15).fill('') });
+  const blankDisc = (name = '') => ({ id: newId(), name, types: { lek: true, prak: true, lab: false, srop: true }, cells: blankCells(), rk1: '', rk2: '', ik: '', auto: false });
+  const blankPeriod = () => ({ tkMode: 'direct', tk: '', rk: '', g: { lek: '', prak: '', lab: '', srop: '' } });
+  const blankQuick = () => ({ discipline: '', config: 'K2', p1: blankPeriod(), p2: blankPeriod(), auto: false, autoAttend: false, autoTasks: false, ik: '' });
+
+  // Примеры: оценки со скриншотов Platonus. Строка недель: «.» — н.п., «н» — неявка.
+  const W = s => s.split(' ').map(x => (x === '.' ? '' : x));
+  const ex = (name, rows, rk1, rk2, ik) => {
+    const d = blankDisc(name);
+    d.types = { lek: false, prak: false, lab: false, srop: false };
+    for (const [t, line] of Object.entries(rows)) { d.types[t] = true; d.cells[t] = W(line); }
+    d.rk1 = String(rk1); d.rk2 = String(rk2); d.ik = String(ik);
+    return d;
+  };
+  const EXAMPLES = {
+    s1: () => [
+      ex('Дифференциальное и интегральное исчисление I', {
+        lek:  '. . . 98 . . 80 . . . . . . 70 .',
+        prak: '. . 100 100 55 75 60 30 . 40 70 60 75 85 80',
+        srop: '. . . . . . 80 . . . . . . 70 .',
+      }, 82, 69, 74),
+      ex('Иностранный язык 1', {
+        prak: '. . 85 70 70 60 80 65 70 75 75 75 80 75 85',
+        srop: '. . . . 70 . 80 . 70 75 . . 80 . 85',
+      }, 70, 80, 76),
+      ex('Информационно-коммуникационные технологии', {
+        lek:  '. . . . . . 90 н . . . . . 70 .',
+        prak: '. . 100 60 95 100 . . 100 90 100 . 70 60 .',
+        srop: '. . . . . . 100 . . . . . . . 100',
+      }, 91, 73, 92),
+      ex('История Казахстана', {
+        lek:  '. . . . . . 80 . . . . . . . 85',
+        prak: '. . 70 80 75 78 70 78 78 80 85 83 70 60 70',
+        srop: '. . . . . . 85 . . . . . . 88 .',
+      }, 83, 83, 78),
+      ex('Казахский (русский) язык 1', {
+        prak: '. . 92 93 85 89 90 90 91 85 72 90 85 89 91',
+        srop: '. . 85 . . . . . 85 . . . . . .',
+      }, 90, 89, 88),
+      ex('Физика', {
+        lek:  '. . . . . . 80 . . . . . . 80 80',
+        prak: '. . 75 65 65 14 75 60 70 70 60 100 70 75 90',
+        srop: '. . . . . 80 80 . . . . . . 80 90',
+      }, 70, 79, 74),
+      ex('Физическая культура', {
+        prak: '. . 90 90 90 92 91 92 91 92 88 87 88 86 89',
+        srop: '. . 100 100 100 . . 100 . . 100 100 . 100 100',
+      }, 93, 87, 93),
+    ],
+    s2: () => [
+      ex('Администрирование операционной системы Windows', {
+        lek:  '. . . . . 97 98 . . . . 90 . . .',
+        lab:  '. 90 70 100 96 96 . 80 80 . 82 90 90 100 .',
+        srop: '. . . . . . 85 . . . . . 77 . .',
+      }, 98, 90, 90),
+      ex('Дифференциальное и интегральное исчисление II', {
+        lek:  '. . . . . . 45 . . . . . . . 90',
+        prak: '. . 60 100 88 90 100 90 55 . 87 90 65 100 .',
+        srop: '. . . . . . 90 . . . . . . . 85',
+      }, 80, 89, 81),
+      ex('Иностранный язык 2', {
+        prak: '. 75 65 85 85 80 80 70 75 . 75 75 75 80 85',
+        srop: '. . 70 . 85 . 80 . 75 . . . 80 . .',
+      }, 70, 70, 75),
+      ex('Казахский (русский) язык 2', {
+        prak: '85 86 89 90 80 85 89 87 83 . 90 91 90 90 90',
+        srop: '. . . 85 . . . . . . 85 . . 85 .',
+      }, 70, 90, 85),
+      ex('Линейная алгебра', {
+        lek:  '. . . . . . 88 . . . . . . . 50',
+        prak: '. 100 . 100 48 84 . 100 90 . 95 83 100 100 .',
+        srop: '. . . . . . 100 . . . . . . . 65',
+      }, 92, 80, 83),
+      ex('Программирование алгоритмов и структур данных', {
+        lek:  '. . . . . . 70 . . . . . . 90 .',
+        lab:  '. 90 90 90 50 60 . 70 . 70 70 80 90 90 .',
+        srop: '85 . . . . . 85 . . . . . 85 85 .',
+      }, 80, 90, 81),
+      ex('Физическая культура', {
+        prak: '. 88 87 88 87 88 87 89 86 86 88 88 87 87 89',
+        srop: '. . 100 100 . . . 100 . . . 88 88 . .',
+      }, 89, 88, 89),
+    ],
+  };
+
+  function normalizeDisc(raw) {
+    const d = blankDisc();
+    if (!raw || typeof raw !== 'object') return d;
+    const str = (x, n = 40) => (typeof x === 'string' ? x.slice(0, n) : typeof x === 'number' && isFinite(x) ? String(x) : '');
+    if (typeof raw.id === 'string' && /^[\w-]{1,40}$/.test(raw.id)) d.id = raw.id;
+    d.name = str(raw.name, 120);
+    if (raw.types && typeof raw.types === 'object') for (const t of TYPES) d.types[t] = raw.types[t] === true;
+    if (raw.cells && typeof raw.cells === 'object') for (const t of TYPES) {
+      const arr = Array.isArray(raw.cells[t]) ? raw.cells[t] : [];
+      d.cells[t] = Array.from({ length: 15 }, (_, i) => str(arr[i], 8));
+    }
+    d.rk1 = str(raw.rk1, 8); d.rk2 = str(raw.rk2, 8); d.ik = str(raw.ik, 8);
+    d.auto = raw.auto === true;
+    return d;
+  }
+  function normalizeQuick(raw) {
+    const q = blankQuick();
+    if (!raw || typeof raw !== 'object') return q;
+    const str = (x, n = 500) => (typeof x === 'string' ? x.slice(0, n) : typeof x === 'number' && isFinite(x) ? String(x) : '');
+    q.discipline = str(raw.discipline, 120);
+    if (typeof raw.config === 'string' && COEF[raw.config]) q.config = raw.config;
+    for (const n of ['p1', 'p2']) {
+      const p = raw[n];
+      if (!p || typeof p !== 'object') continue;
+      q[n].tkMode = p.tkMode === 'manual' ? 'manual' : 'direct';
+      q[n].tk = str(p.tk, 20); q[n].rk = str(p.rk, 20);
+      if (p.g && typeof p.g === 'object') for (const k of TYPES) q[n].g[k] = str(p.g[k]);
+    }
+    q.auto = raw.auto === true; q.autoAttend = raw.autoAttend === true; q.autoTasks = raw.autoTasks === true;
+    q.ik = str(raw.ik, 20);
+    return q;
+  }
+  function normalize(raw) {
+    const s = { v: 2, tab: 'journal', savedAt: 0, example: null, disciplines: [], disciplinesLong: [blankDisc()], quick: blankQuick() };
+    if (!raw || typeof raw !== 'object') return null;
+    if (raw.tab === 'quick' || raw.tab === 'long') s.tab = raw.tab;
+    if (typeof raw.savedAt === 'number') s.savedAt = raw.savedAt;
+    if (raw.example === 's1' || raw.example === 's2') s.example = raw.example;
+    if (Array.isArray(raw.disciplines)) s.disciplines = raw.disciplines.slice(0, 30).map(normalizeDisc);
+    if (Array.isArray(raw.disciplinesLong)) s.disciplinesLong = raw.disciplinesLong.slice(0, 30).map(normalizeDisc);
+    s.quick = normalizeQuick(raw.quick);
+    return s;
+  }
+  const initialState = () => ({ v: 2, tab: 'journal', savedAt: 0, example: 's2', disciplines: EXAMPLES.s2(), disciplinesLong: [blankDisc()], quick: blankQuick() });
+
+  let localOk = true;
+  function loadLocal() {
+    try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? normalize(JSON.parse(raw)) : null; }
+    catch (e) { localOk = false; return null; }
+  }
+  let state = loadLocal() || initialState();
+
+  // Облачное сохранение: личный документ в хранилище этой страницы (видит только сам пользователь).
+  let cloud = null; // { ref }
+  let cloudTimer = null, cloudStatus = '';
+  function persist() {
+    state.savedAt = Date.now();
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); localOk = true; } catch (e) { localOk = false; }
+    if (cloud) {
+      clearTimeout(cloudTimer);
+      cloudTimer = setTimeout(pushCloud, 1200);
+    }
+    renderSaveState();
+  }
+  async function pushCloud() {
+    if (!cloud) return;
+    try {
+      await cloud.ref.set({ json: JSON.stringify(state), savedAt: state.savedAt });
+      cloudStatus = 'ok';
+    } catch (e) { cloudStatus = 'fail'; }
+    renderSaveState();
+  }
+  async function connectCloud() {
+    try {
+      if (!window.claude || typeof window.claude.use !== 'function') return;
+      const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+      if (!db || !user || typeof user.id !== 'function') return;
+      const id = await user.id();
+      if (!id) return;
+      const ref = db.doc(`data/users/${id}/journal`);
+      const snap = await ref.get();
+      cloud = { ref };
+      if (snap.exists) {
+        const body = snap.data() || {};
+        let remote = null;
+        try { remote = normalize(JSON.parse(String(body.json || ''))); } catch (e) { remote = null; }
+        if (remote && remote.savedAt > state.savedAt) {
+          state = remote;
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* только облако */ }
+          renderAll();
+          cloudStatus = 'ok';
+          renderSaveState();
+          return;
+        }
+      }
+      if (state.savedAt > 0) await pushCloud();
+      else { cloudStatus = 'ok'; renderSaveState(); }
+    } catch (e) { cloud = null; }
+  }
+  function renderSaveState() {
+    const el = $('#save-state');
+    if (cloud && cloudStatus === 'ok') el.textContent = 'Журнал сохраняется в вашем аккаунте Claude — откроется и на другом устройстве.';
+    else if (cloud && cloudStatus === 'fail') el.textContent = 'Не удалось сохранить в аккаунт — данные пока только в этом браузере. Сохраните копию через «Экспорт».';
+    else if (localOk) el.textContent = 'Журнал сохраняется в этом браузере автоматически.';
+    else el.textContent = 'Автосохранение недоступно — сохраните журнал через «Экспорт».';
+  }
+
+  /* ================= ОБЩИЙ ВЫВОД ================= */
+
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  function needHTML(need) {
+    return `<div class="need"><h3>Сколько нужно на экзамене</h3><div class="need-grid">${need.map(({ g, ik }) => {
+      const cls = ik == null ? 'no' : ik === 0 ? 'free' : '';
+      return `<div class="need-cell ${cls}"><div class="l tone-${g.tone}">${g.letter}</div><div class="v">${ik == null ? '—' : ik === 0 ? '0+' : ik}</div></div>`;
+    }).join('')}</div></div>`;
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    const t = $('#toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+  const openDlg = d => (typeof d.showModal === 'function' ? d.showModal() : d.setAttribute('open', ''));
+  const closeDlg = d => (typeof d.close === 'function' ? d.close() : d.removeAttribute('open'));
+
+  /* ================= ЖУРНАЛ ================= */
+
+  let nyaMode = false;
+  const models = new Map();
+  // Активный журнал: обычный (недели 1–7 / 8–15) или удлинённый (1–9 / 10–15).
+  const isLong = () => state.tab === 'long';
+  const SPLIT = () => (isLong() ? 9 : 7);
+  const L = () => (isLong() ? state.disciplinesLong : state.disciplines);
+  const setL = arr => { if (isLong()) state.disciplinesLong = arr; else state.disciplines = arr; };
+  const clearEx = () => { if (!isLong()) state.example = null; };
+  const findDisc = id => L().find(d => d.id === id);
+
+  function cellCls(raw) {
+    const c = parseCell(raw);
+    if (c.k === 'np') return 'cell np';
+    if (c.k === 'nya') return 'cell nya';
+    if (c.k === 'bad') return 'cell bad';
+    return c.v < EPS ? 'cell zero' : 'cell';
+  }
+
+  function discHTML(d) {
+    const present = TYPES.filter(t => d.types[t]);
+    const n = present.length;
+    const sp = SPLIT();
+    const wk = (a, b) => Array.from({ length: b - a }, (_, i) => `<th scope="col">${a + i + 1}</th>`).join('');
+    const head = `
+      <thead>
+        <tr class="grp"><th class="sticky"></th><th colspan="${sp + 4}">Период 1 · недели 1–${sp}</th><th colspan="${15 - sp + 4}" class="gap">Период 2 · недели ${sp + 1}–15</th><th colspan="4" class="gap">Итог</th></tr>
+        <tr><th class="sticky" scope="col">Вид</th>${wk(0, sp)}<th>ТК1</th><th>ТК1 общ</th><th>РК1</th><th>Р1</th>
+        <th class="gap">${sp + 1}</th>${wk(sp + 1, 15)}<th>ТК2</th><th>ТК2 общ</th><th>РК2</th><th>Р2</th>
+        <th class="gap">РД</th><th>ИК</th><th>%</th><th>Буква</th></tr>
+      </thead>`;
+    let body;
+    if (!n) body = `<tr class="empty-row"><td class="sticky" colspan="28">Отметьте виды занятий этой дисциплины — кнопки «Лекция», «Практика», «Лаб.», «СРСП» выше.</td></tr>`;
+    else body = present.map((t, r) => {
+      const cells = w => `<td class="wk${w === sp ? ' gap' : ''}"><input class="${cellCls(d.cells[t][w])}" type="text" inputmode="decimal" autocomplete="off" maxlength="5" placeholder="н.п." id="c-${d.id}-${t}-${w}" data-t="${t}" data-w="${w}" data-r="${r}" value="${esc(d.cells[t][w])}" aria-label="${TYPE_NAME[t]}, неделя ${w + 1}"></td>`;
+      const span = (inner, cls = '') => (r === 0 ? `<td rowspan="${n}" class="${cls}">${inner}</td>` : '');
+      const p1 = Array.from({ length: sp }, (_, w) => cells(w)).join('');
+      const p2 = Array.from({ length: 15 - sp }, (_, w) => cells(w + sp)).join('');
+      return `<tr>
+        <td class="sticky"><span class="kind">${TYPE_NAME[t]}</span><span class="coefv" data-o="coef-${t}"></span></td>
+        ${p1}<td class="out" data-o="tk-${t}-0"></td>
+        ${span('', 'out tot" data-o="tkob-0')}
+        ${span(`<input class="val" type="text" inputmode="decimal" autocomplete="off" id="rk1-${d.id}" data-f="rk1" value="${esc(d.rk1)}" placeholder="РК1" aria-label="РК1">`)}
+        ${span('', 'out tot" data-o="p-0')}
+        ${p2}<td class="out" data-o="tk-${t}-1"></td>
+        ${span('', 'out tot" data-o="tkob-1')}
+        ${span(`<input class="val" type="text" inputmode="decimal" autocomplete="off" id="rk2-${d.id}" data-f="rk2" value="${esc(d.rk2)}" placeholder="РК2" aria-label="РК2">`)}
+        ${span('', 'out tot" data-o="p-1')}
+        ${span('', 'out big gap" data-o="rd')}
+        ${span(`<input class="val" type="text" inputmode="decimal" autocomplete="off" id="ik-${d.id}" data-f="ik" value="${esc(d.ik)}" placeholder="ИК" aria-label="ИК — экзамен">`)}
+        ${span('', 'out big" data-o="io')}
+        ${span('', 'out big" data-o="letter')}
+      </tr>`;
+    }).join('');
+
+    return `<section class="card disc" id="disc-${d.id}" data-id="${d.id}" aria-label="${esc(d.name || 'Дисциплина')}">
+      <div class="disc-h">
+        <input class="disc-name" type="text" id="name-${d.id}" data-f="name" value="${esc(d.name)}" maxlength="120" placeholder="Название дисциплины" aria-label="Название дисциплины" autocomplete="off">
+        <div class="chips" role="group" aria-label="Виды занятий">${TYPES.map(t => `<button type="button" class="chip" data-type="${t}" aria-pressed="${d.types[t]}">${TYPE_NAME[t]}</button>`).join('')}</div>
+        <span class="cfg" data-o="cfg"></span>
+      </div>
+      <div class="tbl-wrap"><table class="pt">${head}<tbody>${body}</tbody></table></div>
+      <div class="disc-f">
+        <div data-o="status"></div>
+        <div class="disc-actions">
+          <div>
+            <label class="check"><input type="checkbox" id="auto-${d.id}" data-f="auto" ${d.auto ? 'checked' : ''}><span>Автомат: ИК = РД</span></label>
+            <div class="auto-note" data-o="auto"></div>
+          </div>
+          <button type="button" class="btn danger small" data-act="del">Удалить дисциплину</button>
+        </div>
+        <div data-o="need"></div>
+      </div>
+    </section>`;
+  }
+
+  function updateDisc(d) {
+    const card = document.getElementById('disc-' + d.id);
+    if (!card) return;
+    const m = computeDiscipline(d, SPLIT());
+    models.set(d.id, m);
+    const out = (k, html) => { const el = card.querySelector(`[data-o="${k}"]`); if (el) el.innerHTML = html; };
+    const ev = m.ev;
+
+    // Набор видов занятий
+    const cfgEl = card.querySelector('[data-o="cfg"]');
+    if (!m.present.length) { cfgEl.textContent = ''; cfgEl.className = 'cfg'; }
+    else if (m.cfg) { cfgEl.textContent = CONFIG_LABEL[m.cfg]; cfgEl.className = 'cfg'; }
+    else { cfgEl.textContent = 'Такого набора нет в Таблице 1'; cfgEl.className = 'cfg bad'; }
+
+    for (const s of m.streams) {
+      out(`coef-${s.t}`, s.c != null ? `× ${fmtC(s.c)}` : '');
+      out(`tk-${s.t}-0`, fmt(s.tk[0]));
+      out(`tk-${s.t}-1`, fmt(s.tk[1]));
+    }
+    out('tkob-0', fmt(m.tkOb[0])); out('tkob-1', fmt(m.tkOb[1]));
+    out('p-0', fmt(m.p[0])); out('p-1', fmt(m.p[1]));
+    out('rd', fmt(ev.rd));
+    out('io', ev.admission === 'fail' ? '<span class="tone-fail">—</span>' : ev.grade ? String(ev.grade.rounded) : '—');
+    out('letter', ev.admission === 'fail' ? '<span class="tone-fail" title="Нет допуска">недоп.</span>' : ev.grade ? `<span class="tone-${ev.grade.tone}">${ev.grade.letter}</span>` : '—');
+
+    for (const k of ['rk1', 'rk2']) { const el = card.querySelector(`[data-f="${k}"]`); if (el) el.setAttribute('aria-invalid', String(m.invalid[k])); }
+    const ikEl = card.querySelector('[data-f="ik"]');
+    if (ikEl) {
+      if (ev.auto.applied) { ikEl.disabled = true; ikEl.value = fmt(ev.rd); ikEl.setAttribute('aria-invalid', 'false'); }
+      else { if (ikEl.disabled) { ikEl.disabled = false; ikEl.value = d.ik; } ikEl.setAttribute('aria-invalid', String(m.invalid.ik)); }
+    }
+
+    // Статус
+    let st = '';
+    if (!m.present.length) st = `<div class="banner info"><span>Отметьте виды занятий, чтобы заполнять журнал.</span></div>`;
+    else if (!m.cfg) st = `<div class="banner warn"><strong>Регламент не задаёт коэффициенты для такого набора.</strong> В Таблице 1 есть: все четыре вида; без лаб.; без практики; только практика + СРСП; только лекции + СРСП.</div>`;
+    if (m.errors.length) st += `<div class="banner err"><strong>Проверьте ввод:</strong> ${esc(m.errors.join('; '))}</div>`;
+    if (m.cfg && !m.errors.length) {
+      if (ev.admission === 'fail') st += ev.fails.map(f => `<div class="banner err"><strong>${esc(f.title)}.</strong> ${esc(f.detail)}</div>`).join('');
+      else if (ev.admission === 'ok') st += `<div class="banner ok"><strong>Допуск к экзамену есть.</strong> РК без нулей, средний РК ${fmt(ev.rkAvg)} ≥ 50, РД ${fmt(ev.rd)} ≥ 50${ev.grade ? ` · итог ${ev.grade.rounded} — ${ev.grade.letter}, ${ev.grade.trad.toLowerCase()}` : ''}${ev.grade && ev.grade.letter === 'FX' ? '. Экзамен можно пересдать один раз' : ''}${ev.grade && ev.grade.letter === 'F' ? '. Дисциплину придётся изучать повторно' : ''}</div>`;
+      else st += `<div class="banner info"><span>Пока не хватает: ${esc(m.missing.join('; '))}.</span></div>`;
+    }
+    out('status', st);
+
+    // Автомат
+    let a;
+    if (ev.auto.applied) a = `<span class="auto-note ok">Условия выполнены по журналу: ИК = РД = ${fmt(ev.rd)}. Если не согласны — можно сдавать экзамен.</span>`;
+    else if (ev.auto.eligible) a = 'По журналу автомат возможен: нет «н», нет нулей, оба РК ≥ 50. Решение — за преподавателем.';
+    else a = `Автомат: ${esc(ev.auto.reasons.join('; '))}.`;
+    out('auto', a);
+    card.querySelector('[data-o="auto"]').className = 'auto-note' + (ev.auto.eligible ? ' ok' : '');
+
+    out('need', ev.need && ev.ik == null && !m.errors.length ? needHTML(ev.need) : '');
+  }
+
+  function renderSummary() {
+    const rows = L().map(d => {
+      const m = models.get(d.id) || computeDiscipline(d, SPLIT());
+      const ev = m.ev;
+      let pill;
+      if (m.errors.length) pill = '<span class="pill err">ошибка ввода</span>';
+      else if (ev.admission === 'fail') pill = '<span class="pill err">нет допуска</span>';
+      else if (ev.admission === 'ok') pill = ev.auto.applied ? '<span class="pill auto">автомат</span>' : '<span class="pill ok">допуск</span>';
+      else pill = '<span class="pill info">не заполнено</span>';
+      const letter = ev.admission === 'fail' ? '<span class="tone-fail">—</span>' : ev.grade ? `<span class="letter tone-${ev.grade.tone}">${ev.grade.letter}</span>` : '—';
+      return `<tr>
+        <td class="name"><button type="button" data-goto="${d.id}">${esc(d.name || 'Без названия')}</button></td>
+        <td class="n hide-sm">${fmt(m.p[0])}</td><td class="n hide-sm">${fmt(m.p[1])}</td>
+        <td class="n">${fmt(ev.rd)}</td><td class="n">${ev.grade && ev.admission !== 'fail' ? ev.grade.rounded : '—'}</td>
+        <td class="n">${letter}</td><td>${pill}</td></tr>`;
+    }).join('');
+    $('#sum').innerHTML = L().length
+      ? `<thead><tr><th>Дисциплина</th><th class="n hide-sm">Р1</th><th class="n hide-sm">Р2</th><th class="n">РД</th><th class="n">ИО</th><th class="n">Буква</th><th>Статус</th></tr></thead><tbody>${rows}</tbody>`
+      : `<tbody><tr><td style="color:var(--muted);border:0">Журнал пуст. Добавьте первую дисциплину кнопкой ниже.</td></tr></tbody>`;
+
+    // GPA по завершённым дисциплинам (без учёта кредитов)
+    const graded = L().map(d => models.get(d.id)).filter(m => m && m.ev.grade && m.ev.admission === 'ok' && !m.errors.length);
+    const foot = [];
+    foot.push(`Дисциплин: <b>${L().length}</b>`);
+    if (graded.length) {
+      const gpa = graded.reduce((a, m) => a + Number(m.ev.grade.gpa.replace(',', '.')), 0) / graded.length;
+      foot.push(`Средний балл ИО: <b>${fmt(graded.reduce((a, m) => a + m.ev.grade.rounded, 0) / graded.length)}</b>`);
+      foot.push(`GPA без учёта кредитов: <b>${gpa.toFixed(2).replace('.', ',')}</b>`);
+    }
+    const noAdm = L().map(d => models.get(d.id)).filter(m => m && m.ev.admission === 'fail').length;
+    if (noAdm) foot.push(`<span class="tone-fail">Без допуска: <b class="tone-fail">${noAdm}</b></span>`);
+    $('#sum-foot').innerHTML = foot.map(x => `<span>${x}</span>`).join('');
+
+    $('#sum-title').textContent = isLong() ? 'Удлинённый период · сводка' : 'Сводка семестра';
+    $('#btn-example').hidden = isLong();
+    $('#notice').innerHTML = isLong()
+      ? `<div class="notice"><b>Новый удлинённый период.</b> Из-за позднего начала семестра Период 1 длится до 9-й недели: ТК1 и Р1 считаются по неделям 1–9, ТК2 и Р2 — по неделям 10–15. Этот журнал хранится отдельно от обычного.</div>`
+      : state.example
+      ? `<div class="notice">Сейчас в журнале <b>пример — ваш ${state.example === 's1' ? '1-й' : '2-й'} семестр</b> из Platonus: все Р1, Р2, РД и оценки совпадают со скриншотом. Нажмите «Новый семестр», чтобы заполнять текущий.</div>`
+      : '';
+  }
+
+  function renderJournal() {
+    $('#discs').innerHTML = L().map(discHTML).join('');
+    for (const d of L()) updateDisc(d);
+    renderSummary();
+    applyNyaMode();
+  }
+
+  function applyNyaMode() {
+    $('#btn-nya').setAttribute('aria-pressed', String(nyaMode));
+    $('#view-journal').classList.toggle('nya-mode', nyaMode);
+    for (const el of $$('input.cell')) el.readOnly = nyaMode;
+  }
+
+  function onJournalChange(d) {
+    clearEx();
+    persist();
+    updateDisc(d);
+    renderSummary();
+  }
+
+  function setCell(d, el, value) {
+    d.cells[el.dataset.t][Number(el.dataset.w)] = value;
+    el.className = cellCls(value);
+  }
+
+  function initJournal() {
+    const root = $('#view-journal');
+
+    root.addEventListener('input', e => {
+      const el = e.target;
+      const card = el.closest('.disc');
+      if (!card) return;
+      const d = findDisc(card.dataset.id);
+      if (!d) return;
+      if (el.classList.contains('cell')) { setCell(d, el, el.value.slice(0, 5)); onJournalChange(d); return; }
+      const f = el.dataset.f;
+      if (f === 'name') { d.name = el.value.slice(0, 120); card.setAttribute('aria-label', d.name || 'Дисциплина'); clearEx(); persist(); renderSummary(); return; }
+      if (f === 'rk1' || f === 'rk2' || f === 'ik') { d[f] = el.value.slice(0, 8); onJournalChange(d); }
+    });
+
+    root.addEventListener('change', e => {
+      const el = e.target;
+      if (el.dataset.f !== 'auto') return;
+      const d = findDisc(el.closest('.disc').dataset.id);
+      if (!d) return;
+      d.auto = el.checked;
+      onJournalChange(d);
+    });
+
+    root.addEventListener('click', e => {
+      const cell = e.target.closest('input.cell');
+      if (cell && nyaMode) {
+        const d = findDisc(cell.closest('.disc').dataset.id);
+        const next = parseCell(cell.value).k === 'nya' ? '' : 'н';
+        cell.value = next;
+        setCell(d, cell, next);
+        onJournalChange(d);
+        return;
+      }
+      const chip = e.target.closest('.chip');
+      if (chip) {
+        const card = chip.closest('.disc');
+        const d = findDisc(card.dataset.id);
+        d.types[chip.dataset.type] = !d.types[chip.dataset.type];
+        clearEx();
+        persist();
+        card.outerHTML = discHTML(d);
+        updateDisc(d);
+        renderSummary();
+        applyNyaMode();
+        const again = document.querySelector(`#disc-${d.id} .chip[data-type="${chip.dataset.type}"]`);
+        if (again) again.focus();
+        return;
+      }
+      const del = e.target.closest('[data-act="del"]');
+      if (del) {
+        if (del.dataset.armed !== '1') {
+          del.dataset.armed = '1';
+          del.textContent = 'Точно удалить?';
+          setTimeout(() => { if (del.isConnected) { del.dataset.armed = ''; del.textContent = 'Удалить дисциплину'; } }, 3500);
+          return;
+        }
+        const id = del.closest('.disc').dataset.id;
+        setL(L().filter(x => x.id !== id));
+        models.delete(id);
+        clearEx();
+        persist();
+        renderJournal();
+        toast('Дисциплина удалена');
+        return;
+      }
+      const go = e.target.closest('[data-goto]');
+      if (go) {
+        const card = document.getElementById('disc-' + go.dataset.goto);
+        if (card) {
+          card.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+          const name = card.querySelector('.disc-name');
+          if (name) setTimeout(() => name.focus({ preventScroll: true }), 300);
+        }
+      }
+    });
+
+    // Enter → следующая клетка в строке, затем следующая строка.
+    root.addEventListener('keydown', e => {
+      const el = e.target;
+      if (e.key !== 'Enter' || !el.classList || !el.classList.contains('cell')) return;
+      e.preventDefault();
+      const all = $$('input.cell', el.closest('table'));
+      const order = all.sort((a, b) => (a.dataset.r - b.dataset.r) || (a.dataset.w - b.dataset.w));
+      const i = order.indexOf(el);
+      const next = order[i + (e.shiftKey ? -1 : 1)];
+      if (next) { next.focus(); next.select(); }
+    });
+
+    $('#btn-add').addEventListener('click', () => {
+      const d = blankDisc();
+      L().push(d);
+      clearEx();
+      persist();
+      renderJournal();
+      const name = document.getElementById('name-' + d.id);
+      if (name) { name.scrollIntoView({ block: 'center' }); name.focus(); }
+    });
+    $('#btn-nya').addEventListener('click', () => {
+      nyaMode = !nyaMode;
+      applyNyaMode();
+      toast(nyaMode ? 'Касание по клетке ставит или снимает «н»' : 'Обычный ввод оценок');
+    });
+
+    const exDlg = $('#ex-dlg');
+    $('#btn-example').addEventListener('click', () => openDlg(exDlg));
+    $('#ex-close').addEventListener('click', () => closeDlg(exDlg));
+    for (const b of $$('[data-example]', exDlg)) b.addEventListener('click', () => {
+      state.disciplines = EXAMPLES[b.dataset.example]();
+      state.example = b.dataset.example;
+      if (isLong()) { state.tab = 'journal'; applyTab(); }
+      models.clear();
+      persist();
+      renderJournal();
+      closeDlg(exDlg);
+      toast('Пример загружен');
+    });
+
+    const newDlg = $('#new-dlg');
+    $('#btn-new').addEventListener('click', () => openDlg(newDlg));
+    $('#new-close').addEventListener('click', () => closeDlg(newDlg));
+    $('#new-go').addEventListener('click', () => {
+      setL([blankDisc()]);
+      clearEx();
+      models.clear();
+      persist();
+      renderJournal();
+      closeDlg(newDlg);
+      toast('Журнал очищен');
+    });
+
+    const ioDlg = $('#io-dlg');
+    $('#btn-export').addEventListener('click', () => {
+      $('#io-err').textContent = '';
+      $('#io-text').value = JSON.stringify({ app: 'aues-calc-2026', exportedAt: new Date().toISOString(), journal: isLong() ? 'Удлинённый период 1–9 / 10–15' : 'Обычный 1–7 / 8–15', disciplines: L(), quick: state.quick }, null, 1);
+      openDlg(ioDlg);
+    });
+    $('#io-close').addEventListener('click', () => closeDlg(ioDlg));
+    $('#io-copy').addEventListener('click', async () => {
+      const ta = $('#io-text');
+      try { await navigator.clipboard.writeText(ta.value); toast('Скопировано'); }
+      catch (e) { ta.focus(); ta.select(); toast('Текст выделен — скопируйте его вручную'); }
+    });
+    $('#io-load').addEventListener('click', () => {
+      try {
+        const data = JSON.parse($('#io-text').value);
+        if (!data || !Array.isArray(data.disciplines)) throw new Error('shape');
+        setL(data.disciplines.slice(0, 30).map(normalizeDisc));
+        if (data.quick) state.quick = normalizeQuick(data.quick);
+        clearEx();
+        models.clear();
+        persist();
+        renderAll();
+        closeDlg(ioDlg);
+        toast('Журнал загружен');
+      } catch (e) {
+        $('#io-err').textContent = 'Не получилось прочитать. Вставьте текст из «Экспорт / импорт» целиком, от первой { до последней }.';
+      }
+    });
+  }
+
+  /* ================= БЫСТРЫЙ РАСЧЁТ ================= */
+
+  function periodHTML(n) {
+    const weeks = n === 1 ? '1–7' : '8–15';
+    return `
+    <section class="card">
+      <div class="card-h"><h2>Период ${n}</h2><span class="tag">недели ${weeks}</span></div>
+      <div class="field">
+        <label class="lbl" for="q-p${n}-rk">РК${n} <span class="hint">рубежный контроль</span></label>
+        <input class="txt" type="text" inputmode="decimal" autocomplete="off" id="q-p${n}-rk" data-q="p${n}.rk" placeholder="0–100" style="max-width:140px">
+        <div class="err" id="q-p${n}-rk-err"></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row">
+          <span class="lbl">ТК${n} общ <span class="hint">текущий контроль</span></span>
+          <div class="seg" role="group" aria-label="Способ ввода ТК${n}">
+            <button type="button" data-period="p${n}" data-mode="direct">Готовое число</button>
+            <button type="button" data-period="p${n}" data-mode="manual">По видам занятий</button>
+          </div>
+        </div>
+        <div data-show="p${n}:direct">
+          <input class="txt" type="text" inputmode="decimal" autocomplete="off" id="q-p${n}-tk" data-q="p${n}.tk" placeholder="ТК${n} общ из Platonus, 0–100" aria-label="ТК${n} общ">
+          <div class="err" id="q-p${n}-tk-err"></div>
+        </div>
+        <div data-show="p${n}:manual">
+          <p class="note">Оценки за недели ${weeks} через пробел. «н» = 0, «нп» не считается.</p>
+          <div class="grades" id="q-p${n}-grades"></div>
+        </div>
+        <div class="formula" id="q-p${n}-formula"></div>
+      </div>
+      <div class="pline" id="q-p${n}-p"></div>
+    </section>`;
+  }
+
+  function buildQuickGrades() {
+    for (const n of [1, 2]) {
+      $(`#q-p${n}-grades`).innerHTML = Object.entries(COEF[state.quick.config]).map(([k, c]) => `
+        <div class="grade-row">
+          <label for="q-p${n}-g-${k}">${TYPE_LABEL[k]} <span class="coef">× ${fmtC(c)}</span></label>
+          <input class="txt" type="text" autocomplete="off" id="q-p${n}-g-${k}" data-q="p${n}.g.${k}" placeholder="напр. 90 85 н 100">
+          <div class="meta" id="q-p${n}-g-${k}-meta"></div>
+          <div class="err" id="q-p${n}-g-${k}-err"></div>
+        </div>`).join('');
+    }
+  }
+
+  const qGet = path => path.split('.').reduce((o, k) => o[k], state.quick);
+  function qSet(path, v) {
+    const keys = path.split('.');
+    const last = keys.pop();
+    keys.reduce((o, k) => o[k], state.quick)[last] = v;
+  }
+  const qId = path => 'q-' + path.replace(/\./g, '-');
+
+  function computeQuick(q) {
+    const errors = {}, info = {}, missing = [];
+    const coef = COEF[q.config];
+    const per = [1, 2].map(n => {
+      const p = q['p' + n];
+      const rk = parseScore(p.rk);
+      if (rk.state === 'error') errors[`p${n}.rk`] = rk.msg;
+      if (rk.state === 'empty') missing.push(`РК${n}`);
+      let tk, parts = null;
+      if (p.tkMode === 'direct') {
+        tk = parseScore(p.tk);
+        if (tk.state === 'error') errors[`p${n}.tk`] = tk.msg;
+        if (tk.state === 'empty') missing.push(`ТК${n} общ`);
+      } else {
+        parts = []; let bad = false; const empty = [];
+        for (const [k, c] of Object.entries(coef)) {
+          const r = parseGradeList(p.g[k]);
+          info[`p${n}.g.${k}`] = r;
+          if (r.state === 'error') { errors[`p${n}.g.${k}`] = r.msg; bad = true; }
+          else if (r.state === 'empty') empty.push(TYPE_LABEL[k].toLowerCase());
+          else parts.push({ c, avg: r.value });
+        }
+        if (bad) tk = { state: 'error' };
+        else if (empty.length) { tk = { state: 'empty' }; missing.push(`ТК${n}: ${empty.join(', ')}`); }
+        else tk = { state: 'ok', value: parts.reduce((s, x) => s + x.c * x.avg, 0) };
+      }
+      const rkV = rk.state === 'ok' ? rk.value : null;
+      const tkV = tk.state === 'ok' ? tk.value : null;
+      return { n, rk: rkV, tk: tkV, parts, p: rkV != null && tkV != null ? 0.7 * tkV + 0.3 * rkV : null };
+    });
+    let ik = null;
+    const ikR = parseScore(q.ik);
+    if (ikR.state === 'error') errors.ik = ikR.msg;
+    else if (ikR.state === 'ok') ik = ikR.value;
+    const ev = evaluate({
+      rk: per.map(x => x.rk), p: per.map(x => x.p), ik, autoReq: q.auto,
+      attendOk: q.autoAttend, attendMsg: 'не отмечена 100% посещаемость',
+      tasksOk: q.autoTasks, tasksMsg: 'не отмечено своевременное выполнение заданий',
+    });
+    return { errors, hasErrors: Object.keys(errors).length > 0, info, missing, per, ev };
+  }
+
+  function renderQuick() {
+    const q = state.quick;
+    const m = computeQuick(q);
+    const ev = m.ev;
+    for (const el of $$('#view-quick input.txt[data-q]')) {
+      const err = m.errors[el.dataset.q];
+      el.setAttribute('aria-invalid', err ? 'true' : 'false');
+      const box = document.getElementById(qId(el.dataset.q) + '-err');
+      if (box) box.textContent = err || '';
+    }
+    for (const b of $$('#view-quick .seg button[data-period]')) b.setAttribute('aria-pressed', String(q[b.dataset.period].tkMode === b.dataset.mode));
+    for (const el of $$('#view-quick [data-show]')) { const [p, mode] = el.dataset.show.split(':'); el.hidden = q[p].tkMode !== mode; }
+    for (const [path, r] of Object.entries(m.info)) {
+      const meta = document.getElementById(qId(path) + '-meta');
+      if (!meta) continue;
+      let t = r.state === 'ok' ? `среднее ${fmt(r.value)} · оценок: ${r.count}` : '';
+      if (r.skipped) t += `${t ? ' · ' : ''}нп пропущено: ${r.skipped}`;
+      meta.textContent = t;
+    }
+    for (const x of m.per) {
+      $(`#q-p${x.n}-formula`).textContent = x.parts && x.tk != null ? `ТК${x.n} общ = ${x.parts.map(p => `${fmtC(p.c)}×${fmt(p.avg)}`).join(' + ')} = ${fmt(x.tk)}` : '';
+      $(`#q-p${x.n}-p`).innerHTML = x.p != null ? `P${x.n} = 0,7 × ${fmt(x.tk)} + 0,3 × ${fmt(x.rk)} = <b>${fmt(x.p)}</b>` : `P${x.n} = 0,7 × ТК${x.n} общ + 0,3 × РК${x.n}`;
+    }
+
+    $('#q-auto-conds').hidden = !q.auto;
+    const ikEl = $('#q-ik');
+    if (ev.auto.applied && !m.hasErrors) { ikEl.disabled = true; ikEl.value = fmt(ev.rd); }
+    else if (ikEl.disabled) { ikEl.disabled = false; ikEl.value = q.ik; }
+    const as = $('#q-auto-status');
+    if (!q.auto) as.innerHTML = '';
+    else if (ev.auto.applied) as.innerHTML = `<div class="banner ok"><strong>Условия автомата выполнены.</strong> ИК = РД = ${fmt(ev.rd)}. Если не согласны с оценкой — можно сдавать экзамен.</div>`;
+    else as.innerHTML = `<div class="banner warn"><strong>Автомат не положен:</strong><ul>${ev.auto.reasons.map(r => `<li>${esc(r)}</li>`).join('')}</ul></div>`;
+
+    let h = '';
+    if (m.hasErrors) h += `<div class="banner err"><strong>Ошибка ввода — исправьте поля, отмеченные красным.</strong></div>`;
+    else if (ev.admission === 'fail') h += ev.fails.map(f => `<div class="banner err"><strong>${esc(f.title)}.</strong> ${esc(f.detail)}</div>`).join('');
+    else if (ev.admission === 'ok') h += `<div class="banner ok"><strong>Допуск к экзамену есть.</strong> РК без нулей, средний РК ${fmt(ev.rkAvg)} ≥ 50, РД ${fmt(ev.rd)} ≥ 50</div>`;
+    else h += `<div class="banner info"><strong>Недостаточно данных.</strong> <span>Заполните: ${esc(m.missing.join('; '))}</span></div>`;
+    const v = x => (m.hasErrors ? '—' : fmt(x));
+    const [a, b] = m.per;
+    let ioCell = '—';
+    if (!m.hasErrors && ev.admission === 'fail') ioCell = '<span class="tone-fail">недопуск</span>';
+    else if (!m.hasErrors && ev.io != null) ioCell = String(ev.grade.rounded);
+    h += `<table class="metrics"><tbody>
+      <tr><td>P1<span class="sm">0,7·ТК1 + 0,3·РК1</span></td><td>${v(a.p)}</td></tr>
+      <tr><td>P2<span class="sm">0,7·ТК2 + 0,3·РК2</span></td><td>${v(b.p)}</td></tr>
+      <tr><td>РД — рейтинг допуска<span class="sm">(P1 + P2) / 2${ev.rdExact != null && !m.hasErrors ? ` = ${fmt(ev.rdExact)}, округлено` : ''}</span></td><td>${v(ev.rd)}</td></tr>
+      <tr><td>ИК — экзамен${ev.auto.applied ? ' <span class="pill auto">автомат</span>' : ''}</td><td>${v(ev.ik)}</td></tr>
+      <tr class="total"><td>ИО — итоговая<span class="sm">0,6·РД + 0,4·ИК${ev.io != null && !m.hasErrors ? ` = ${fmt(ev.io)}, округлено` : ''}</span></td><td>${ioCell}</td></tr>
+    </tbody></table>`;
+    if (!m.hasErrors && ev.grade) {
+      const g = ev.grade;
+      h += `<div class="grade-tile"><div class="letter tone-${g.tone}">${g.letter}</div><div class="gt-meta"><b>${g.trad}</b>Цифровой эквивалент ${g.gpa} · по шкале ${g.rounded}${g.letter === 'FX' ? '<br>Можно один раз пересдать экзамен' : ''}${g.letter === 'F' ? '<br>Повторное изучение дисциплины' : ''}</div></div>`;
+    }
+    if (!m.hasErrors && ev.need) h += needHTML(ev.need);
+    $('#q-res').innerHTML = h;
+  }
+
+  function fillQuickInputs() {
+    $('#q-config').value = state.quick.config;
+    for (const el of $$('#view-quick [data-q]')) {
+      if (el.tagName === 'SELECT') continue;
+      const v = qGet(el.dataset.q);
+      if (el.type === 'checkbox') el.checked = v === true;
+      else if (!el.disabled) el.value = v;
+    }
+  }
+
+  function initQuick() {
+    $('#q-periods').innerHTML = periodHTML(1) + periodHTML(2);
+    $('#q-config').innerHTML = Object.entries(CONFIG_LABEL).map(([k, l]) => `<option value="${k}">${l}</option>`).join('');
+    buildQuickGrades();
+    fillQuickInputs();
+    const root = $('#view-quick');
+    root.addEventListener('input', e => {
+      const el = e.target;
+      if (!el.dataset.q || el.tagName === 'SELECT' || el.type === 'checkbox') return;
+      qSet(el.dataset.q, el.value);
+      persist(); renderQuick();
+    });
+    root.addEventListener('change', e => {
+      const el = e.target;
+      if (el.id === 'q-config') {
+        state.quick.config = COEF[el.value] ? el.value : 'K2';
+        buildQuickGrades(); fillQuickInputs(); persist(); renderQuick();
+      } else if (el.type === 'checkbox' && el.dataset.q) {
+        qSet(el.dataset.q, el.checked); persist(); renderQuick();
+      }
+    });
+    root.addEventListener('click', e => {
+      const b = e.target.closest('.seg button[data-period]');
+      if (!b) return;
+      state.quick[b.dataset.period].tkMode = b.dataset.mode;
+      persist(); renderQuick();
+    });
+    $('#q-reset').addEventListener('click', () => {
+      state.quick = blankQuick();
+      $('#q-ik').disabled = false;
+      buildQuickGrades(); fillQuickInputs(); persist(); renderQuick();
+      toast('Быстрый расчёт очищен');
+    });
+  }
+
+  /* ================= ВКЛАДКИ ================= */
+
+  function applyTab() {
+    for (const b of $$('[data-tab]')) b.setAttribute('aria-selected', String(b.dataset.tab === state.tab));
+    $('#view-journal').hidden = state.tab === 'quick';
+    $('#view-journal').setAttribute('aria-labelledby', isLong() ? 'tab-long' : 'tab-journal');
+    $('#view-quick').hidden = state.tab !== 'quick';
+  }
+
+  function renderAll() {
+    applyTab();
+    renderJournal();
+    $('#q-ik').disabled = false;
+    buildQuickGrades();
+    fillQuickInputs();
+    renderQuick();
+    renderSaveState();
+  }
+
+  function init() {
+    if (location.hash === '#quick') state.tab = 'quick';
+    else if (location.hash === '#journal') state.tab = 'journal';
+    else if (location.hash === '#long') state.tab = 'long';
+    for (const b of $$('[data-tab]')) b.addEventListener('click', () => {
+      const wasLong = isLong();
+      state.tab = b.dataset.tab;
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ничего */ }
+      applyTab();
+      if (state.tab !== 'quick' && wasLong !== isLong()) { models.clear(); renderJournal(); }
+    });
+    initJournal();
+    initQuick();
+    renderAll();
+    connectCloud();
+  }
+
+  init();
+})();
+</script>
+
+</body></html>
